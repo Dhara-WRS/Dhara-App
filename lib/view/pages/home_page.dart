@@ -5,6 +5,7 @@ import 'package:epics_pj/cofig/textstyles.dart';
 import 'package:epics_pj/utils/services.dart';
 import 'package:epics_pj/view/pages/onboarding_page.dart';
 import 'package:epics_pj/view/pages/report_water_problem_page.dart';
+import 'package:epics_pj/view/pages/view_reported_problems_page.dart';
 import 'package:epics_pj/view/widgets/buttons.dart';
 import 'package:epics_pj/view/widgets/frostedBg.dart';
 import 'package:flutter/material.dart';
@@ -119,8 +120,7 @@ class HomePage extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReportWaterProblemPage()));
+                                  builder: (context) => WaterProblemsPage()));
                         }),
                     TextButton(
                         child: Text("Logout"),
