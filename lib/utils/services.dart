@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:epics_pj/view/widgets/showMessage.dart';
 
@@ -20,7 +21,7 @@ class FirebaseService {
         email: email,
         password: password,
       );
-      // user.sendEmailVerification();
+      user.sendEmailVerification();
       return null;
     } on FirebaseAuthException catch (e) {
       log(e.message.toString());
@@ -51,14 +52,21 @@ class FirebaseService {
     }
   }
 
-  Future<void> signInwithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
       log('Google Sign In Requested');
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
       log('Google Account Selected');
+      if (googleSignInAccount == null) {
+        throw FirebaseAuthException(
+          code: 'google_signin_failed',
+          message: 'Google Sign-In failed or user canceled.',
+        );
+      }
+
       final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+          await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
@@ -68,7 +76,13 @@ class FirebaseService {
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      log(e.message.toString());
+      log('Firebase Auth Error: ${e.message}');
+      throw e;
+    } on PlatformException catch (e) {
+      log('Platform Error: ${e.message}');
+      throw e;
+    } catch (e) {
+      log('Unexpected Error: $e');
       throw e;
     }
   }

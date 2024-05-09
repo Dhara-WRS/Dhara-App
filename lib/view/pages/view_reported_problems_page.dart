@@ -48,7 +48,7 @@ class _WaterProblemsPageState extends State<WaterProblemsPage> {
               GeoPoint? location = data['location'] as GeoPoint?;
               print(location?.latitude);
 
-              // You can build and return a custom card widget here
+              // You can build and return a custom card widget here`
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListTile(

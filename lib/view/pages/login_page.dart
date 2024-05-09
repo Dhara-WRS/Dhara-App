@@ -190,10 +190,9 @@ class _LoginPageState extends State<LoginPage> {
                       resetFeilds();
                     } else {
                       Navigator.pop(context);
-                      log('Please verify email'); //Pop up required
-                      showMessage(
-                          "A verification link was sent to your email. Click on it to continue login. If you have not received the link, kindly press resend.",
-                          context);
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                      resetFeilds();
                       //Ok Button
                       //Resend verification with on click methods
                     }
@@ -223,12 +222,12 @@ class _LoginPageState extends State<LoginPage> {
                   onTap: () async {
                     log("GOOLE LOGIN");
                     try {
-                      await _firebaseService.signInwithGoogle();
-                      //showLoading(context);
-                      if (!mounted) return;
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
+                      await _firebaseService.signInWithGoogle();
+                      // showLoading(context);
+                      // if (!mounted) return;
+                      // Navigator.pop(context);
+                      // Navigator.pushReplacement(context,
+                      // MaterialPageRoute(builder: (context) => HomePage()));
                     } catch (e) {
                       Navigator.pop(context);
                       if (e is FirebaseAuthException) {
