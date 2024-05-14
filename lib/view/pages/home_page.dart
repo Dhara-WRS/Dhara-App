@@ -55,6 +55,7 @@ class HomePage extends StatelessWidget {
               left: -180,
               child: SvgPicture.asset(
                 "assets/Frame.svg",
+                // ignore: deprecated_member_use
                 color: AppColor.primary.withOpacity(0.1),
                 height: 300,
               ),
@@ -77,26 +78,16 @@ class HomePage extends StatelessWidget {
                       height: 20,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(32),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Image.network(
-                                user!.photoURL.toString(),
-                                height: 70,
-                                width: 70,
-                              )),
-                          const SizedBox(
-                            width: 10,
-                          ),
                           SizedBox(
                             width: 200,
                             child: Text(
-                              "Hey! ${user.displayName}",
+                              "Hey! User",
                               textAlign: TextAlign.start,
-                              style: AppTextStyle.displayLarge,
+                              style: AppTextStyle.displayMedium,
                             ),
                           ),
                         ],

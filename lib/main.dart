@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool _isLogin = false;
-    User? firebaseUser = FirebaseAuth.instance.currentUser;
     try {
       User? firebaseUserr = FirebaseAuth.instance.currentUser;
       var user = firebaseUserr ?? null;

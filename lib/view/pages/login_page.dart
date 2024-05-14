@@ -223,6 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                     log("GOOLE LOGIN");
                     try {
                       await _firebaseService.signInWithGoogle();
+
                       // showLoading(context);
                       // if (!mounted) return;
                       // Navigator.pop(context);

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:epics_pj/view/widgets/showMessage.dart';
 
@@ -52,39 +51,25 @@ class FirebaseService {
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    try {
-      log('Google Sign In Requested');
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      log('Google Account Selected');
-      if (googleSignInAccount == null) {
-        throw FirebaseAuthException(
-          code: 'google_signin_failed',
-          message: 'Google Sign-In failed or user canceled.',
-        );
-      }
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    log("signing in with google");
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    log("googleUser");
 
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+    log('error:${googleAuth!.accessToken}');
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-      log('Signed In...');
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      log('Firebase Auth Error: ${e.message}');
-      throw e;
-    } on PlatformException catch (e) {
-      log('Platform Error: ${e.message}');
-      throw e;
-    } catch (e) {
-      log('Unexpected Error: $e');
-      throw e;
-    }
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   // Future<UserCredential> signInWithFacebook() async {

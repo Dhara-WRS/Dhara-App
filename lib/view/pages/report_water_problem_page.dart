@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:epics_pj/cofig/colors.dart';
+import 'package:epics_pj/utils/api_services.dart';
 import 'package:epics_pj/view/pages/login_page.dart';
 import 'package:epics_pj/view/widgets/showMessage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -43,13 +44,42 @@ class _ReportWaterProblemPageState extends State<ReportWaterProblemPage> {
     );
     if (user != null) {
       setState(() {
-        userName = user.displayName;
+        userName = "Harsh";
         userUID = user.uid;
       });
     }
   }
 
-  void _reportProblem(BuildContext context) async {
+  Future showLoading(text) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            height: 100,
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  color: AppColor.primary,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                Text(text),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  _reportProblem(BuildContext context) async {
     String problemDescription = problemController.text;
     String contact = contactController.text;
 
@@ -58,29 +88,31 @@ class _ReportWaterProblemPageState extends State<ReportWaterProblemPage> {
 
       try {
         // Upload the image to Firebase Storage
-        Reference ref = FirebaseStorage.instance
-            .ref()
-            .child('problem_images')
-            .child('${DateTime.now()}.jpg');
-        UploadTask uploadTask = ref.putFile(File(_image!.path));
-        await uploadTask.whenComplete(() async {
-          String imageUrl = await ref.getDownloadURL();
+        // Reference ref = FirebaseStorage.instance
+        //     .ref()
+        //     .child('problem_images')
+        //     .child('${DateTime.now()}.jpg');
+        // UploadTask uploadTask = ref.putFile(File(_image!.path));
+        // await uploadTask.whenComplete(() async {
+        //   String imageUrl = await ref.getDownloadURL();
 
-          // Add the data to Firestore
-          await firestore.collection('/reported_problem/').add({
-            'user_uid': userUID,
-            'user_name': userName,
-            'problem_description': problemDescription,
-            'location': GeoPoint(position!.latitude, position!.longitude),
-            'contact': contact,
-            'image_url': imageUrl,
-            'timestamp': FieldValue.serverTimestamp(),
-          });
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Problem reported successfully!'),
-          ));
-        });
+        //   // Add the data to Firestore
+        //   await firestore.collection('/reported_problem/').add({
+        //     'user_uid': "dsa982kjhlkds9823khlkfs",
+        //     'user_name': "Harsh",
+        //     'problem_description': problemDescription,
+        //     'location': GeoPoint(position!.latitude, position!.longitude),
+        //     'contact': contact,
+        //     'image_url': imageUrl,
+        //     'timestamp': FieldValue.serverTimestamp(),
+        //   });
+        await uploadImage(_image!);
+        await uploadCoordinates(position!);
+        // Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Problem reported successfully!'),
+        ));
+        // });
       } catch (e) {
         print(e);
         showMessage(e.toString(), context);
@@ -163,7 +195,13 @@ class _ReportWaterProblemPageState extends State<ReportWaterProblemPage> {
 
                 AppButton(
                   text: 'Report Problem',
-                  onTap: () => _reportProblem(context),
+                  onTap: () async {
+                    showLoading("Reporting problem");
+                    await _reportProblem(context).then((value) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    });
+                  },
                 ),
               ],
             ),
